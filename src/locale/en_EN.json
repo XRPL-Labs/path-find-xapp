@@ -1,0 +1,58 @@
+{
+    "ledger": {
+        "response_transaction": {
+            "temDISABLED": "Occurs if the DeletableAccounts amendment is not enabled.",
+            "temDST_IS_SRC": "Occurs if the Destination matches the sender of the transaction (Account field).",
+            "tecDST_TAG_NEEDED": "Occurs if the Destination account requires a destination tag, but the DestinationTag field was not provided.",
+            "tecNO_DST": "Occurs if the Destination account is not a funded account in the ledger.",
+            "tecNO_PERMISSION":	"Occurs if the Destination account requires deposit authorization and the sender is not preauthorized.",
+            "tecTOO_SOON": "Occurs if the sender's Sequence number is too high. The transaction's Sequence number plus 256 must be less than the current Ledger Index.",
+            "tecHAS_OBLIGATIONS": "Occurs if the account to be deleted is connected to objects that cannot be deleted in the ledger. (This includes objects created by other accounts, such as escrows.)",
+            "tefTOO_BIG": "Occurs if the sending account is linked to more than 1000 objects in the ledger. The transaction could succeed on retry if some of those objects were deleted separately first."
+        },
+        "request_data_response_ws": {
+            "invalidParams": "One or more fields are specified incorrectly, or one or more required fields are missing.",
+            "lgrNotFound": "The ledger specified by the ledger_hash or ledger_index does not exist, or it does exist but the server does not have it.",
+            "actNotFound": "The Address specified in the account field of the request does not correspond to an account in the ledger."
+        }
+    },
+    "xapp": {
+        "headers": {
+            "select_destination": "Select Destination:",
+            "receive": "Recipient will receive:",
+            "offers": "Offers:"
+        },
+        "trade": {
+            "quantity": "Quantity",
+            "funds": "Funds",
+            "paying": "Paying",
+            "receiving": "Receive",
+            "confirm_order": "Place order",
+            "base": "Base",
+            "quote": "Quote",
+            "issuer": "Issuer"
+        },
+        "button": {
+            "try_again": "try again",
+            "account_not_found_login_button": "Login (actNotFound)",
+            "close": "Close",
+            "select_destination": "Select destination",
+            "select_currency": "Select Currency"
+        },
+        "error": {
+            "modal_title": "Oops",
+            "get_ott_data": "Failed to fetch your XUMM data",
+            "subscribe_to_account": "Failed to subscribe to the XRP Ledger",
+            "sign_offer_create": "A wild error occured creating an Offer",
+            "signin": "A wild error occured trying to login",
+            "sign_cancel_offer": "A wild error occured trying to cancel an Offer",
+            "get_offer_data": "A wild error occured trying to get your Offer data",
+            "get_curated_assets": "Currency list is not available from the API",
+            "react_native_webview": "There is an error with the webview",
+            "market_price": "There is a problem with the market price"
+        },
+        "info": {
+            "no_funds": "You do not have funds for this currency"
+        }
+    }
+}
