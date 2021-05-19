@@ -29,7 +29,7 @@
             <h3>{{ $t('xapp.headers.receive') }}</h3>
             <div class="row push">
                 <div class="input-label" :class="{ 'input-error': quantityInputValidator || quantityInputError }">
-                    <input type="text" inputmode="decimal" :placeholder="$t('xapp.trade.quantity')" v-model="quantityInput" @keydown="prevent">
+                    <input type="text" inputmode="decimal" :placeholder="$t('xapp.input.quantity')" v-model="quantityInput" @keydown="prevent">
                     <label>{{ $xapp.currencyCodeFormat(currency) }}</label>
                 </div>
                 <a @click="$emitter.emit('select', true)" class="btn btn-primary label btn-small">{{ $t('xapp.button.select_currency') }}</a>
@@ -107,8 +107,9 @@ export default {
                     this.InputQuantity = null
                     return this.quantity = null
                 }
-                if(isNaN(parseFloat(value))) {
-                    console.log('NAN')
+                if(parseFloat(value) === 0) {
+                    this.closePathFind()
+                    this.offers = {}
                 }
                 this.InputQuantity = value.toString()
                 value = parseFloat(value)
@@ -116,16 +117,19 @@ export default {
                 if(this.currency === 'XRP') {
                     value = Math.trunc(value * 1_000_000)
                 }
-                this.quantity = value
-                this.onQuantityChange()
+                if(this.quantity !== value) {
+                    this.quantity = value
+                    this.onQuantityChange()
+                }
             }
         },
     },
     methods: {
         async onQuantityChange() {
+            if(this.quantity <= 0) return
             this.fetching = true
             await this.closePathFind()
-            if(this.quantity > 0 && typeof this.quantity === 'number') {
+            if(typeof this.quantity === 'number') {
                 await this.createPathFind()
             }
             this.fetching = false
@@ -359,7 +363,12 @@ export default {
                 this.index = res.id
                 this.parsePathFindData(res)
             } catch(e) {
-                alert(JSON.stringify(e))
+                this.$emitter.emit('modal', {
+                    type: 'error',
+                    title: this.$t('xapp.error.modal_title'),
+                    text: this.$t('xapp.error.path_find'),
+                    buttonText: this.$t('xapp.button.close')
+                })
             }
         },
         async closePathFind() {

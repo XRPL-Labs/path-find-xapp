@@ -3,7 +3,7 @@
         <div id="select-element">
             <div class="column">
                 <div class="header list-header">
-                    {{ 'Select currency HC' }}
+                    {{ $t('xapp.headers.select_currency') }}
                 </div>
                 <ul>
                     <li @click="setCurrency('XRP')">XRP</li>
@@ -16,7 +16,7 @@
             <div class="column">
                 <div class="header list-header">
                     <fa @click="start = false; issuerSelect = false" :icon="['fas', 'arrow-left']" />
-                    {{ $t('xapp.trade.issuer') }}
+                    {{ $t('xapp.headers.select_issuer') }}
                 </div>
                 <ul>
                     <li @click="setIssuer({ currency: item.currency, issuer: item.account })" v-for="(item, key, index) in issuers" :key="index">{{ getIssuerName(key) }}</li>

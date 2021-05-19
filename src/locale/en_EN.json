@@ -20,17 +20,12 @@
         "headers": {
             "select_destination": "Select Destination:",
             "receive": "Recipient will receive:",
-            "offers": "Offers:"
+            "offers": "Offers:",
+            "select_currency": "Select Currency",
+            "select_issuer": "Select Issuer"
         },
-        "trade": {
-            "quantity": "Quantity",
-            "funds": "Funds",
-            "paying": "Paying",
-            "receiving": "Receive",
-            "confirm_order": "Place order",
-            "base": "Base",
-            "quote": "Quote",
-            "issuer": "Issuer"
+        "input": {
+            "quantity": "Quantity"
         },
         "button": {
             "try_again": "try again",
@@ -49,7 +44,7 @@
             "get_offer_data": "A wild error occured trying to get your Offer data",
             "get_curated_assets": "Currency list is not available from the API",
             "react_native_webview": "There is an error with the webview",
-            "market_price": "There is a problem with the market price"
+            "path_find": "An error occured finding a path"
         },
         "info": {
             "no_funds": "You do not have funds for this currency"
