@@ -1,20 +1,9 @@
 <template>
     <div v-show="active" @click.self="active = false; start = true; issuerSelect = false" class="overlay">
-        <div id="select-element" v-if="start">
-            <div class="exchange-form column">
-                <div class="currency-change column" @click="start = false">
-                    <h6>Change currency</h6>
-                    <a class="btn btn-primary label">{{ $xapp.currencyCodeFormat(currency) }}</a>
-                    {{ getIssuerName(issuer) }}
-                </div>
-            </div>
-        </div>
-        
-        <div id="select-element" v-else>
+        <div id="select-element">
             <div class="column">
                 <div class="header list-header">
-                    {{ 'issuer select' }}
-                    <fa @click="start = true" :icon="['fas', 'arrow-right']" />
+                    {{ 'Select currency HC' }}
                 </div>
                 <ul>
                     <li @click="setCurrency('XRP')">XRP</li>
@@ -28,7 +17,6 @@
                 <div class="header list-header">
                     <fa @click="start = false; issuerSelect = false" :icon="['fas', 'arrow-left']" />
                     {{ $t('xapp.trade.issuer') }}
-                    <fa @click="start = true; issuerSelect = false" :icon="['fas', 'arrow-right']" />
                 </div>
                 <ul>
                     <li @click="setIssuer({ currency: item.currency, issuer: item.account })" v-for="(item, key, index) in issuers" :key="index">{{ getIssuerName(key) }}</li>
@@ -50,8 +38,6 @@ export default {
     data() {
         return {
             active: false,
-            header: 'Im a header',
-            start: true,
             issuerSelect: false,
             target: '',
             selectedCurrency: '',
@@ -126,24 +112,25 @@ export default {
             for(const token of this.tokens) {
                 if(token === issuer) return this.token[token].data.username
             }
-            return 'Unknown'
+            return `${issuer.slice(0, 4)}...${issuer.slice(-4)}`
         },
         openIssuerSelect(line) {
             this.issuerSelect = true
             this.selectedCurrency = line
         },
         setIssuer(object) {
+            this.active = false
             this.issuerSelect = false
-            this.start = true
             this.$emit('currencyChange', object)
         },
         setCurrency(currency) {
             if(currency === 'XRP') {
-                this.start = true
-                this.$emit('currencyChange', { currency: 'XRP', issuer: null })
-                return 
-            }
-            this.openIssuerSelect(currency)
+                this.active = false
+                return this.$emit('currencyChange', { currency, issuer: null })
+            } else if(Object.keys(this.accountTrustlines[currency]).length <= 1) {
+                this.active = false
+                return this.$emit('currencyChange', { currency, issuer: Object.keys(this.accountTrustlines)[0] })
+            } else this.openIssuerSelect(currency)
         }
     },
     async created() {

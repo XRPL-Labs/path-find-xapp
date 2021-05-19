@@ -34,29 +34,32 @@
                 </div>
                 <a @click="$emitter.emit('select', true)" class="btn btn-primary label btn-small">{{ $t('xapp.button.select_currency') }}</a>
             </div>
-            <!-- <div class="row">
-                <a v-if="$xapp.getAccountData() !== null" @click="order()" class="btn btn-primary btn-0-margin" :class="{ disabled: !funds && funds <= 0 }">{{ $t('xapp.trade.confirm_order') }}</a>
-                <a v-else @click="signin()" class="btn btn-warning btn-0-margin">{{ $t('xapp.button.account_not_found_login_button') }}</a>
-            </div> -->
         </div>
 
         <hr class="divide">
 
         <Spinner v-if="fetching"/>
-        <div class="column" v-else-if="pathFindData">
+        <div id="offer-list" class="column" v-else-if="Object.keys(offers).length > 0">
             <h3>{{ $t('xapp.headers.offers') }}</h3>
-            <div class="row payment-card push" v-for="item in pathFindData.alternatives">
-                <div class="number" v-if="typeof item.source_amount === 'string' || typeof item.source_amount === 'number'">
-                    <label>XRP:</label>
-                    {{ $xapp.currencyFormat(item.source_amount, 'XRP') }}
+            <div class="payment-card row" v-for="(items, currency) in offers">
+                <div class="row push" v-if="currency === 'XRP'">
+                    <div class="number">
+                        <label>XRP:</label>
+                        {{ $xapp.currencyFormat(items.source_amount, 'XRP') }}
+                    </div>
+                    <a class="btn btn-success btn-0-margin label btn-small" @click="pay(items)">Pay Now</a>
                 </div>
-                <div v-else class="number">
-                    <label>{{ $xapp.currencyCodeFormat(item.source_amount.currency, 4) }}:</label>
-                    {{ $xapp.currencyFormat(item.source_amount.value, item.source_amount.currency) }}
+                <div class="row  push" v-else v-for="(item, issuer) in items">
+                    <div class="number">
+                        <label>{{ $xapp.currencyCodeFormat(item.source_amount.currency, 4) }}:</label>
+                        {{ $xapp.currencyFormat(item.source_amount.value, item.source_amount.currency) }}
+                    </div>
+                    <a class="btn btn-success btn-0-margin label btn-small" @click="pay(item)">Pay Now</a>
                 </div>
-                <a class="btn btn-success btn-0-margin label btn-small" @click="pay(item)">Pay Now</a>
             </div>
         </div>
+        <h3 v-else-if="quantity > 0">No Offers HC</h3>
+        <h3 v-else>Show this if there is no quantity input and not fetching HC</h3>
     </div>
 </template>
 
@@ -73,36 +76,22 @@ export default {
             quantity: null,
             online: false,
             InputQuantity: null,
-            sliderValue: null,
             quantityInputError: false,
             destination: null,
             issuer: null,
             currency: 'XRP',
             destinationtrustlines: [],
             fetching: false,
-            pathFindData: null
-        }
-    },
-    watch: {
-        quantity: async function(newValue, oldValue) {
-            // this.fetching = true
-            // await this.closePathFind()
-            // if(newValue > 0 && typeof newValue === 'number') {
-            //     await this.createPathFind()
-            // }
-            // this.fetching = false
+            offers: {},
+            index: 0
         }
     },
     computed: {
         quantityInputValidator() {
             if(this.quantity < 0) return true
-            return this.quantity > this.funds
         },
         account() {
             return this.$xapp.getAccount()
-        },
-        funds() {
-            return Infinity
         },
         quantityInput: {
             get() {
@@ -113,9 +102,13 @@ export default {
 
                 value = this.parseValue(value)
                 if(value === null) {
-                    this.sliderValue = 0
+                    this.closePathFind()
+                    this.offers = {}
                     this.InputQuantity = null
                     return this.quantity = null
+                }
+                if(isNaN(parseFloat(value))) {
+                    console.log('NAN')
                 }
                 this.InputQuantity = value.toString()
                 value = parseFloat(value)
@@ -192,52 +185,13 @@ export default {
                 Destination: this.destination,
                 SendMax: path.source_amount,
                 Amount: this.currency === 'XRP' ? this.quantity.toString() : { currency: this.currency, value: this.quantity, issuer: this.issuer },
-                Paths: path.paths_computed
+                Paths: path.paths_computed,
+                Flags: 131072
             }
             try {
                 await this.$xapp.signPayload({
                     user_token: this.$xapp.ott,
                     txjson: payment
-                })
-            } catch(e) {
-                if(e.error !== false) {
-                    this.$emitter.emit('modal', {
-                        type: 'error',
-                        title: this.$t('xapp.error.modal_title'),
-                        text: this.$t('xapp.error.sign_offer_create'),
-                        buttonText: this.$t('xapp.button.close')
-                    })
-                }
-            }
-            this.$emitter.emit('busy', false)
-        },
-        async order() {
-            if(!this.funds || this.funds <= 0) {
-                return this.$emitter.emit('modal', {
-                    type: 'info',
-                    title: this.$t('xapp.error.modal_title'),
-                    text: this.$t('xapp.info.no_funds'),
-                    buttonText: this.$t('xapp.button.close')
-                })
-            }
-
-            let inputError = false
-            if(typeof this.quantity !== 'number' || this.quantity <= 0) {
-                this.quantityInputError = true
-                inputError = true
-            }
-
-            if(inputError) {
-                return
-            } else {
-                this.quantityInputError = false   
-            }
-
-            this.$emitter.emit('busy', true)
-            try {
-                await this.$xapp.signPayload({
-                    user_token: this.$xapp.ott,
-                    txjson: OfferCreate
                 })
             } catch(e) {
                 if(e.error !== false) {
@@ -290,6 +244,11 @@ export default {
             this.$emitter.emit('busy', false)
         },
         setCurrency(obj) {
+            if(this.currency === obj.currency && this.issuer === obj.issuer) return
+            this.closePathFind()
+            this.offers = {}
+            this.InputQuantity = null
+            this.quantity = null
             if(this.currency === 'XRP' && obj.currency !== 'XRP') this.quantity = this.quantity / 1_000_000
             if(this.currency !== 'XRP' && obj.currency === 'XRP') this.quantity = this.quantity * 1_000_000
             this.currency = obj.currency
@@ -355,10 +314,22 @@ export default {
             }
             this.$xapp.setAccountData(account_data)
         },
+        parsePathFindData(path) {
+            path.alternatives.forEach(element => {
+                if(typeof element.source_amount === 'string' || typeof element.source_amount === 'number') {
+                     this.offers['XRP'] = element
+                } else {
+                    this.offers[element.source_amount.currency] = {
+                        [element.source_amount.issuer]: element
+                    }
+                }
+            })
+        },
         onPathFindUpdate(path) {
-            this.pathFindData = path
+            if(path.id === this.index) this.parsePathFindData(path)
         },
         async createPathFind() {
+            this.offers = {}
             const amount = this.quantity.toString()
             let command = {}
             if(this.currency === 'XRP') {
@@ -385,12 +356,14 @@ export default {
 
             try {
                 const res = await this.$rippled.send(command)
-                this.pathFindData = res
+                this.index = res.id
+                this.parsePathFindData(res)
             } catch(e) {
                 alert(JSON.stringify(e))
             }
         },
         async closePathFind() {
+            this.index = null
             await this.$rippled.send({ command: "path_find", subcommand: "close" })
         }
     },
@@ -424,6 +397,10 @@ export default {
 </script>
 
 <style>
+#offer-list {
+    flex: 1 1 auto;
+    overflow: auto;
+}
 #destination-selector {
     border: 1px solid var(--var-border);
     border-radius: 10px;
@@ -440,7 +417,7 @@ export default {
     border-bottom: solid 1px black;
     width: 90%;
     height: 100%;
-    /* margin: 10px 0 !important; */
+    max-height: 60px;
     text-align: center;
     padding-bottom: 16px;
     padding-top: 8px;
@@ -463,15 +440,6 @@ h6 {
     text-align: end;
 }
 hr {
-    /* display: block;
-    unicode-bidi: isolate;
-    margin-block-start: 0.5em;
-    margin-block-end: 0.5em;
-    margin-inline-start: auto;
-    margin-inline-end: auto;
-    overflow: hidden;
-    border-style: solid;
-    border-width: 1px; */
     margin: 0;
     border: 0;
     border-top: 1px solid var(--var-border);
@@ -543,7 +511,6 @@ hr.divide {
     display: flex;
     justify-content: center;
     align-items: center;
-    /* background-color: var(--var-bg-color); */
 }
 .input-label input {
     color: var(--var-txt-color);
@@ -559,13 +526,11 @@ hr.divide {
 select {
     -webkit-appearance: none;
 }
-/* input[inputmode=decimal] */
 select {
     width: 100%;
     color: var(--var-txt-color);
     background-color: var(--var-bg-color);
 }
-/* input[inputmode=decimal] */
 select {
     text-align: center;
     text-align-last: center;
