@@ -127,7 +127,7 @@ export default {
                     if (curatedAssets.details[exchange].currencies[currency].issuer === issuer) return curatedAssets.details[exchange].name
                 }
             }
-            return 'Unknown'
+            return `${issuer.slice(0, 4)}...${issuer.slice(-4)}`
         }
 
         const status = (url) => {
