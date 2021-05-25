@@ -13,13 +13,22 @@
         </div>
         
         <hr>
-        <div v-if="!destination" class="column">
+        <div v-if="$xapp.getAccountData() === null" class="column">
+            <h3>{{ $t('xapp.headers.unactivated_account') }}</h3>
+            <a @click="signin()" class="btn btn-primary btn-0-margin">
+                {{ $t('xapp.button.account_not_found_login_button') }}
+                <fa :icon="['fas', 'arrow-right']" />
+            </a>
+        </div>
+
+        <div v-else-if="!destination" class="column">
             <h3>{{ $t('xapp.headers.select_destination') }}</h3>
             <a @click="selectDestination()" class="btn btn-primary btn-0-margin">
                 {{ $t('xapp.button.select_destination') }}
                 <fa :icon="['fas', 'arrow-right']" />
             </a>
         </div>
+
         <div v-else class="column">
             <h3>{{ $t('xapp.headers.select_destination') }}</h3>
             <a @click="selectDestination()" id="destination-selector">
@@ -35,6 +44,7 @@
                 <a @click="$emitter.emit('select', true)" class="btn btn-primary label btn-small">{{ $t('xapp.button.select_currency') }}</a>
             </div>
         </div>
+
 
         <hr class="divide">
 
@@ -59,7 +69,7 @@
             </div>
         </div>
         <h3 v-else-if="quantity > 0">No Offers HC</h3>
-        <h3 v-else>Show this if there is no quantity input and not fetching HC</h3>
+        <h3 v-else-if="destination && $xapp.getAccountData() !== null">Show this if there is no quantity input and not fetching HC</h3>
     </div>
 </template>
 
@@ -220,6 +230,12 @@ export default {
                 })
                 const account = result.data.response.account
                 this.destination = account
+
+                this.closePathFind()
+                this.offers = {}
+                this.InputQuantity = null
+                this.quantity = null
+
                 // await this.setAccountData(account)
             } catch(e) {
                 if(e.error !== false) {
@@ -269,6 +285,12 @@ export default {
                 })
                 const account = result.data.response.account
                 if(this.$xapp.getAccount() === account) throw { msg: 'Same account', error: false }
+
+                this.closePathFind()
+                this.offers = {}
+                this.InputQuantity = null
+                this.quantity = null
+
                 await this.$rippled.send({
                     command: 'unsubscribe',
                     accounts: [this.$xapp.getAccount()]
