@@ -32,7 +32,7 @@
         <div v-else class="column">
             <h3>{{ $t('xapp.headers.select_destination') }}</h3>
             <a @click="selectDestination()" id="destination-selector">
-                <h4>Account name</h4>
+                <h4>{{ destinationName || 'Account'}}</h4>
                 <h6>{{ destination }}</h6>
             </a>
             <h3>{{ $t('xapp.headers.receive') }}</h3>
@@ -88,6 +88,7 @@ export default {
             InputQuantity: null,
             quantityInputError: false,
             destination: null,
+            destinationName: null,
             issuer: null,
             currency: 'XRP',
             destinationtrustlines: [],
@@ -221,15 +222,10 @@ export default {
         },
         async selectDestination() {
             this.$emitter.emit('busy', true)
-            try {
-                const result = await this.$xapp.signPayload({
-                    user_token: this.$xapp.ott,
-                    txjson: {
-                        TransactionType: "SignIn"
-                    }
-                })
-                const account = result.data.response.account
-                this.destination = account
+            try {              
+                const result = await this.$xapp.destinationSelect()
+                this.destination = result.destination.address
+                this.destinationName = result.destination.name
 
                 this.closePathFind()
                 this.offers = {}

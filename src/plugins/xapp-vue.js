@@ -137,8 +137,7 @@ export default {
                     document.removeEventListener("message", message)
 
                     const data = JSON.parse(event.data)
-                    if(data.method !== 'payloadResolved') return reject('')
-                    if(data.reason === 'SIGNED') return resolve()
+                    if(data.reason === 'SIGNED' || data.reason === 'SELECTED') return resolve(data)
                     else return reject('')
                 }
                 //iOS
@@ -146,6 +145,17 @@ export default {
                 //Android
                 document.addEventListener('message', message)
             })
+        }
+
+        const destinationSelect = async () => {
+            try {
+                sendCommandtoXumm({ "command": "selectDestination" })
+                const res = await status()
+                return res
+            } catch (e) {
+                if (e === '') throw { msg: 'closed', error: false }
+                throw e
+            }
         }
 
         const payload = async (payload) => {
@@ -253,6 +263,7 @@ export default {
             getCuratedAssets,
             getIssuerName,
             openSignRequest,
+            destinationSelect,
             closeXapp,
             status,
             setAccountData,
