@@ -31,7 +31,7 @@
 
         <div v-else class="column">
             <h3>{{ $t('xapp.headers.select_destination') }}</h3>
-            <a @click="selectDestination()" id="destination-selector">
+            <a @click="selectDestination()" id="destination-selector" :class="{ 'input-error': destinationError }">
                 <h4>{{ destinationName || 'Account'}}</h4>
                 <h6>{{ destination }}</h6>
             </a>
@@ -88,6 +88,7 @@ export default {
             InputQuantity: null,
             quantityInputError: false,
             destination: null,
+            destinationError: false,
             destinationName: null,
             issuer: null,
             currency: 'XRP',
@@ -192,7 +193,6 @@ export default {
                 this.quantityInputError = false   
             }
             this.$emitter.emit('busy', true)
-            console.log(path)
 
             const payment = {
                 TransactionType: "Payment",
@@ -222,6 +222,7 @@ export default {
         },
         async selectDestination() {
             this.$emitter.emit('busy', true)
+            this.destinationError = false
             try {              
                 const result = await this.$xapp.destinationSelect()
                 this.destination = result.destination.address
@@ -231,8 +232,6 @@ export default {
                 this.offers = {}
                 this.InputQuantity = null
                 this.quantity = null
-
-                // await this.setAccountData(account)
             } catch(e) {
                 if(e.error !== false) {
                     this.$emitter.emit('modal', {
@@ -249,6 +248,17 @@ export default {
                     account: this.destination
                 })
                 this.destinationtrustlines = account_lines.lines
+
+                if(account_lines.error === 'actNotFound') {
+                    this.destinationError = true
+                    this.$emitter.emit('modal', {
+                        type: 'error',
+                        title: this.$t('xapp.error.modal_title'),
+                        text: this.$t(`ledger.request_data_response_ws.${account_lines.error}`),
+                        buttonText: this.$t('xapp.button.close')
+                        
+                    })
+                }
             } catch(e) {
                 this.$emitter.emit('modal', {
                     type: 'error',
@@ -402,6 +412,15 @@ export default {
                     command: 'account_lines',
                     account: this.destination
                 })
+                if(account_lines.error === 'actNotFound') {
+                    this.destinationError = true
+                    this.$emitter.emit('modal', {
+                        type: 'error',
+                        title: this.$t('xapp.error.modal_title'),
+                        text: this.$t(`ledger.request_data_response_ws.${account_lines.error}`),
+                        buttonText: this.$t('xapp.button.close')
+                    })
+                }
                 this.destinationtrustlines = account_lines.lines
             } catch(e) {
                 this.$emitter.emit('modal', {
