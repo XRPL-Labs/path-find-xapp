@@ -223,15 +223,16 @@ export default {
         async selectDestination() {
             this.$emitter.emit('busy', true)
             this.destinationError = false
-            try {              
+
+            this.closePathFind()
+            this.offers = {}
+            this.InputQuantity = null
+            this.quantity = null
+
+            try {
                 const result = await this.$xapp.destinationSelect()
                 this.destination = result.destination.address
                 this.destinationName = result.destination.name
-
-                this.closePathFind()
-                this.offers = {}
-                this.InputQuantity = null
-                this.quantity = null
             } catch(e) {
                 if(e.error !== false) {
                     this.$emitter.emit('modal', {
@@ -242,6 +243,11 @@ export default {
                     })
                 }
             }
+
+            if (typeof window.ReactNativeWebView === 'undefined') {
+                this.destination = 'rJR4MQt2egH9AmibZ8Hu5yTKVuLPv1xumm'
+            }
+
             try {
                 const account_lines = await this.$rippled.send({
                     command: 'account_lines',
@@ -260,6 +266,7 @@ export default {
                     })
                 }
             } catch(e) {
+                alert('error')
                 this.$emitter.emit('modal', {
                     type: 'error',
                     title: this.$t('xapp.error.modal_title'),
@@ -329,20 +336,9 @@ export default {
             }
             this.$xapp.setAccount(account)
 
-            const account_lines = await this.$rippled.send({
-                command: 'account_lines',
-                account: account
-            })
-            const account_objects = await this.$rippled.send({
-                command: 'account_objects',
-                account: account
-            })
-
             const account_data = {
                 account: this.$xapp.getAccount(),
-                account_data: account_info.account_data,
-                objects: account_objects.account_objects,
-                lines: account_lines.lines
+                account_data: account_info.account_data
             }
             this.$xapp.setAccountData(account_data)
         },
@@ -405,32 +401,6 @@ export default {
         }
     },
     async mounted() {
-        if (typeof window.ReactNativeWebView === 'undefined') {
-            this.destination = 'rJR4MQt2egH9AmibZ8Hu5yTKVuLPv1xumm'
-            try {
-                const account_lines = await this.$rippled.send({
-                    command: 'account_lines',
-                    account: this.destination
-                })
-                if(account_lines.error === 'actNotFound') {
-                    this.destinationError = true
-                    this.$emitter.emit('modal', {
-                        type: 'error',
-                        title: this.$t('xapp.error.modal_title'),
-                        text: this.$t(`ledger.request_data_response_ws.${account_lines.error}`),
-                        buttonText: this.$t('xapp.button.close')
-                    })
-                }
-                this.destinationtrustlines = account_lines.lines
-            } catch(e) {
-                this.$emitter.emit('modal', {
-                    type: 'error',
-                    title: this.$t('xapp.error.modal_title'),
-                    text: 'Error getting destination account lines (HC)',
-                    buttonText: this.$t('xapp.button.close')
-                })
-            }
-        }
         setInterval(() => {
             this.online = this.$rippled.getState().online
         }, 1000)

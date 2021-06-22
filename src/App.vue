@@ -61,21 +61,9 @@ export default {
             })
             if(account_info.error === 'actNotFound') return this.$xapp.setAccountData(null)
 
-            const account_lines = await this.$rippled.send({
-                command: 'account_lines',
-                account: this.$xapp.getAccount()
-            })
-            // if (account_lines.lines < 1) alert('no trustlines')
-            const account_objects = await this.$rippled.send({
-                command: 'account_objects',
-                account: this.$xapp.getAccount()
-            })
-
             const account_data = {
                 account: this.$xapp.getAccount(),
-                account_data: account_info.account_data,
-                objects: account_objects.account_objects,
-                lines: account_lines.lines
+                account_data: account_info.account_data
             }
             this.$xapp.setAccountData(account_data)
         },
