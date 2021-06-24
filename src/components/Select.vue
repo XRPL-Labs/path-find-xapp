@@ -197,18 +197,19 @@ export default {
     align-self: center;
 }
 ul {
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
-  font-size: 15px;
-  height: 100px;
-  overflow: auto;
-  width: 90%;
-  align-self: center;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    font-size: 15px;
+    height: 100px;
+    overflow: auto;
+    width: 90%;
+    align-self: center;
   /* color: var(--var-txt-color); */
 }
 li {
     border-bottom: 1px solid var(--var-border);
     padding: 4px 0;
+    text-align: center;
 }
 </style>
