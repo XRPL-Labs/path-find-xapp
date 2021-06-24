@@ -360,6 +360,7 @@ export default {
             let command = {}
             if(this.currency === 'XRP') {
                 command = {
+                    id: this.index,
                     command: 'path_find',
                     subcommand: 'create',
                     source_account: this.account,
@@ -368,6 +369,7 @@ export default {
                 }
             } else {
                 command = {
+                    id: this.index,
                     command: "path_find",
                     subcommand: "create",
                     source_account: this.account,
@@ -382,8 +384,7 @@ export default {
 
             try {
                 const res = await this.$rippled.send(command)
-                this.index = res.id
-                this.parsePathFindData(res)
+                this.parsePathFindData(res.result)
             } catch(e) {
                 this.$emitter.emit('modal', {
                     type: 'error',
@@ -394,7 +395,7 @@ export default {
             }
         },
         async closePathFind() {
-            this.index = null
+            this.index++
             await this.$rippled.send({ command: "path_find", subcommand: "close" })
         }
     },
