@@ -35,7 +35,8 @@
             "account_not_found_login_button": "Login (actNotFound)",
             "close": "Close",
             "select_destination": "Select destination",
-            "select_currency": "Select Currency"
+            "select_currency": "Select Currency",
+            "pay_now": "Pay Now!"
         },
         "error": {
             "modal_title": "Oops",

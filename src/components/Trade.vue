@@ -13,6 +13,7 @@
         </div>
         
         <hr>
+
         <div v-if="$xapp.getAccountData() === null" class="column">
             <h3>{{ $t('xapp.headers.unactivated_account') }}</h3>
             <a @click="signin()" class="btn btn-primary btn-0-margin">
@@ -31,10 +32,13 @@
 
         <div v-else class="column">
             <h3>{{ $t('xapp.headers.select_destination') }}</h3>
-            <a @click="selectDestination()" id="destination-selector" :class="{ 'input-error': destinationError }">
-                <h4>{{ destinationName || 'Account'}}</h4>
-                <h6>{{ destination }}</h6>
-            </a>
+            <div @click="selectDestination()" id="destination-selector" :class="{ 'input-error': destinationError }">
+                <a>
+                    <h4>{{ destinationName || 'Account'}}</h4>
+                    <h6>{{ destination }}</h6>
+                </a>
+                <fa :icon="['fas', 'sort-down']"></fa>
+            </div>
             <h3>{{ $t('xapp.headers.receive') }}</h3>
             <div class="row push">
                 <div class="input-label" :class="{ 'input-error': quantityInputValidator || quantityInputError }">
@@ -48,7 +52,8 @@
 
         <hr class="divide">
 
-        <Spinner v-if="fetching"/>
+        <h3 v-if="destination && $xapp.getAccountData() !== null && !fetching && (quantity <= 0 || quantity === null)">{{ $t('xapp.headers.no_input') }}</h3>
+        <Spinner v-else-if="fetching"/>
         <div id="offer-list" class="column" v-else-if="Object.keys(offers).length > 0">
             <h3>{{ $t('xapp.headers.offers') }}</h3>
             <div class="payment-card row" v-for="(items, currency) in offers">
@@ -57,19 +62,18 @@
                         <label>XRP:</label>
                         {{ $xapp.currencyFormat(items.source_amount, 'XRP') }}
                     </div>
-                    <a class="btn btn-success btn-0-margin label btn-small" @click="pay(items)">Pay Now</a>
+                    <a class="btn btn-success btn-0-margin label btn-small" @click="pay(items)">{{ $t('xapp.button.pay_now') }}</a>
                 </div>
                 <div class="row  push" v-else v-for="(item, issuer) in items">
                     <div class="number">
                         <label>{{ $xapp.currencyCodeFormat(item.source_amount.currency, 4) }}:</label>
                         {{ $xapp.currencyFormat(item.source_amount.value, item.source_amount.currency) }}
                     </div>
-                    <a class="btn btn-success btn-0-margin label btn-small" @click="pay(item)">Pay Now</a>
+                    <a class="btn btn-success btn-0-margin label btn-small" @click="pay(item)">{{ $t('xapp.button.pay_now') }}</a>
                 </div>
             </div>
         </div>
-        <h3 v-else-if="quantity > 0">{{ $t('xapp.headers.no_offers') }}</h3>
-        <h3 v-else-if="destination && $xapp.getAccountData() !== null">{{ $t('xapp.headers.no_input') }}</h3>
+        <h3 v-else>{{ $t('xapp.headers.no_offers') }}</h3>
     </div>
 </template>
 
@@ -147,7 +151,7 @@ export default {
             this.fetching = false
         },
         parseValue(value) {
-            if(value === '') return null
+            if(value === '' || !value) return null
             if(value === ',' || value === '.') return '0.'
             value = value.replace(/,/g, '.')
             return value
@@ -204,10 +208,13 @@ export default {
                 Flags: 131072
             }
             try {
-                await this.$xapp.signPayload({
+                const res = await this.$xapp.signPayload({
                     user_token: this.$xapp.ott,
                     txjson: payment
                 })
+                const txid = res.response.txid
+                this.$xapp.openTxViewer(txid, this.account)
+                this.quantityInput = null
             } catch(e) {
                 if(e.error !== false) {
                     this.$emitter.emit('modal', {
@@ -261,7 +268,6 @@ export default {
                         title: this.$t('xapp.error.modal_title'),
                         text: this.$t(`ledger.request_data_response_ws.${account_lines.error}`),
                         buttonText: this.$t('xapp.button.close')
-                        
                     })
                 }
             } catch(e) {
@@ -386,6 +392,7 @@ export default {
                 const res = await this.$rippled.send(command)
                 this.parsePathFindData(res.result)
             } catch(e) {
+                console.log(e)
                 this.$emitter.emit('modal', {
                     type: 'error',
                     title: this.$t('xapp.error.modal_title'),
@@ -421,6 +428,10 @@ export default {
     border-radius: 10px;
     margin: 10px 0;
     padding: 10px 15px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
 }
 #destination-selector h4 {
     margin: 0;

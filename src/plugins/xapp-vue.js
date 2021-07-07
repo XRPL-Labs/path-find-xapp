@@ -164,7 +164,7 @@ export default {
                 openSignRequest(res.data.uuid)
                 await status()
                 const result = await axios.get(`${api}/payload/${res.data.uuid}`, headers())
-                return result
+                return result.data
             } catch(e) {
                 if (e === '') throw { msg: 'closed', error: false }
                 throw e
@@ -253,6 +253,18 @@ export default {
             } else return trimmed
         }
 
+        const openTxViewer = (tx, account) => {
+            try {
+                sendCommandtoXumm({
+                    command: 'txDetails',
+                    tx,
+                    account
+                })
+            } catch(e) {
+                throw e
+            }
+        }
+
         app.config.globalProperties.$xapp = {
             ott: ott,
             accessToken,
@@ -274,7 +286,8 @@ export default {
             onTransaction,
             signPayload: payload,
             currencyFormat,
-            currencyCodeFormat
+            currencyCodeFormat,
+            openTxViewer
         }
     }
 }
