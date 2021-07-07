@@ -129,7 +129,7 @@ export default {
                 return this.$emit('currencyChange', { currency, issuer: null })
             } else if(Object.keys(this.accountTrustlines[currency]).length <= 1) {
                 this.active = false
-                return this.$emit('currencyChange', { currency, issuer: Object.keys(this.accountTrustlines)[0] })
+                return this.$emit('currencyChange', { currency, issuer: Object.keys(this.accountTrustlines[currency])[0] })
             } else this.openIssuerSelect(currency)
         }
     },
@@ -149,14 +149,14 @@ export default {
             })
         }
 
-        try {
-            const res = await fetch('https://tokens.xumm.community/api/v1/tokens')
-            // const res = await axios.get('https://tokens.xumm.community/api/v1/tokens')
-            this.tokens = res.tokens
-        } catch(e) {
-            // alert('error with nixer API')
-            // alert(e)
-        }
+        // try {
+        //     const res = await fetch('https://tokens.xumm.community/api/v1/tokens')
+        //     // const res = await axios.get('https://tokens.xumm.community/api/v1/tokens')
+        //     this.tokens = res.tokens
+        // } catch(e) {
+        //     // alert('error with nixer API')
+        //     // alert(e)
+        // }
     }
 }
 </script>
