@@ -68,8 +68,8 @@
                 </div>
             </div>
         </div>
-        <h3 v-else-if="quantity > 0">No Offers HC</h3>
-        <h3 v-else-if="destination && $xapp.getAccountData() !== null">Show this if there is no quantity input and not fetching HC</h3>
+        <h3 v-else-if="quantity > 0">{{ $t('xapp.headers.no_offers') }}</h3>
+        <h3 v-else-if="destination && $xapp.getAccountData() !== null">{{ $t('xapp.headers.no_input') }}</h3>
     </div>
 </template>
 
@@ -268,7 +268,7 @@ export default {
                 this.$emitter.emit('modal', {
                     type: 'error',
                     title: this.$t('xapp.error.modal_title'),
-                    text: 'Error getting destination account lines (HC)',
+                    text: this.$t('xapp.error.account_lines'),
                     buttonText: this.$t('xapp.button.close')
                 })
             }
