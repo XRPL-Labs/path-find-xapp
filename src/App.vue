@@ -9,7 +9,9 @@
             <div id="failed-start" class="column">
                 <fa :icon="['fas', 'exclamation-circle']" />
                 <p>{{ error }}</p>
-                <a @click="if($t('xapp.error.get_ott_data') === error) getTokenData(); else if($t('xapp.error.subscribe_to_account') === error) subscribe();" class="btn btn-primary">{{ $t("xapp.button.try_again") }}</a>
+                <a v-if="$t('xapp.error.get_ott_data') === error" @click="getTokenData()" class="btn btn-primary">{{ $t("xapp.button.try_again") }}</a>
+                <a v-else-if="$t('xapp.error.version') === error" @click="close()" class="btn btn-primary">{{ $t('xapp.button.close') }}</a>
+                <a v-else-if="$t('xapp.error.subscribe_to_account') === error" @click="subscribe()" class="btn btn-primary">{{ $t('xapp.button.try_again') }}</a>
             </div>
         </div>
     </div>
@@ -51,9 +53,52 @@ export default {
             await this.subscribe()
         } catch(e) {
             this.busy = false
+            this.error = e
         }
     },
     methods: {
+        close() {
+            try {
+                this.$xapp.closeXapp()
+            } catch(e) {}
+        },
+        versionCheck(v1, v2) {
+            var v1parts = v1.split('.');
+            var v2parts = v2.split('.');
+
+            // First, validate both numbers are true version numbers
+            function validateParts(parts) {
+                for (var i = 0; i < parts.length; ++i) {
+                    if (!/^\d+$/.test(parts[i])) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+            if (!validateParts(v1parts) || !validateParts(v2parts)) {
+                return NaN;
+            }
+
+            for (var i = 0; i < v1parts.length; ++i) {
+                if (v2parts.length === i) {
+                    return 1;
+                }
+
+                if (v1parts[i] === v2parts[i]) {
+                    continue;
+                }
+                if (v1parts[i] > v2parts[i]) {
+                    return 1;
+                }
+                return -1;
+            }
+
+            if (v1parts.length != v2parts.length) {
+                return -1;
+            }
+
+            return 0;
+        },
         async setAccountData () {
             const account_info = await this.$rippled.send({
                 command: 'account_info',
@@ -83,9 +128,11 @@ export default {
                     this.data = await this.$xapp.getTokenData()
                     this.$xapp.setAccount(this.data.account)
                 } catch(e) {
-                    this.busy = false
-                    this.error = this.$t('xapp.error.get_ott_data')
-                    throw e
+                    console.log(e)
+                    throw this.$t('xapp.error.get_ott_data')
+                }
+                if (this.versionCheck(this.data.version, '2.1.0') < 0) {
+                    throw this.$t('xapp.error.version')
                 }
             }
         },
@@ -93,14 +140,14 @@ export default {
             this.busy = true
             try {
                 const url = this.getWebSocketUrl(this.data.nodetype)
-                const ws = await this.$rippled.connect(url, { NoUserAgent: true, MaxConnectTryCount: 5 })
-                await this.setAccountData()
-                await ws.send({
+                await this.$rippled.connect(url, { NoUserAgent: true, MaxConnectTryCount: 5 })
+                this.setAccountData()
+                this.$rippled.send({
                     command: 'subscribe',
                     accounts: [this.data.account]
                 })
 
-                ws.on('transaction', tx => {
+                this.$rippled.on('transaction', tx => {
                     this.setAccountData()
                     this.$xapp.onTransaction(tx)
                 })
@@ -108,10 +155,8 @@ export default {
                 this.ready = true
                 this.error = false
             } catch(e) {
-                this.busy = false
                 console.log(e)
-                this.error = this.$t('xapp.error.subscribe_to_account')
-                throw e
+                throw this.$t('xapp.error.subscribe_to_account')
             }
         },
         getWebSocketUrl(nodetype) {
