@@ -73,7 +73,7 @@
                 </div>
             </div>
         </div>
-        <h3 v-else>{{ $t('xapp.headers.no_offers') }}</h3>
+        <h3 v-else-if="destination">{{ $t('xapp.headers.no_offers') }}</h3>
     </div>
 </template>
 
