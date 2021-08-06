@@ -49,9 +49,6 @@
             </div>
         </div>
 
-
-        <hr class="divide">
-
         <h3 v-if="destination && $xapp.getAccountData() !== null && !fetching && (quantity <= 0 || quantity === null)">{{ $t('xapp.headers.no_input') }}</h3>
         <Spinner v-else-if="fetching"/>
         <div id="offer-list" class="column" v-else-if="Object.keys(offers).length > 0">
