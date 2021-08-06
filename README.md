@@ -1,4 +1,4 @@
-# offer-create
+# path-find-xapp
 
 ## Project setup
 ```
