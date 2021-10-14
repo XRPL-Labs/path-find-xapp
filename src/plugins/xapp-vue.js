@@ -49,27 +49,19 @@ export default {
             'color': 'var(--var-txt-color)'
         }
 
-        const accessToken = () => {
-            if(state.jwt) return state.jwt
-            else {
-                state.jwt = state.tokenData.token
-                return state.jwt
-            }
-        }
-
         const api = options.api
         const api_key = options.key
         const headers = (getJWT) => {
-            if(getJWT) return { headers: { 'x-api-key': api_key } }
-            else return { headers: { Authorization: accessToken(), 'x-api-key': api_key } }
+            if(getJWT) return { headers: { 'x-api-key': api_key, 'x-api-ott': ott } }
+            else return { headers: { Authorization: `Bearer ${state.jwt}` } }
         }
 
         const getTokenData = async () => {
             if(Object.keys(state.tokenData).length === 0 && state.tokenData.constructor === Object) {
                 try {
-                    const res = await axios.get(`${api}/xapp/ott/${ott}`, headers(true))
-                    state.tokenData = res.data
-                    state.jwt = res.data.token
+                    const res = await axios.get(`${api}/authorize`, headers(true))
+                    state.tokenData = res.data.ott
+                    state.jwt = res.data.jwt
                     return state.tokenData
                 } catch(e) {
                     console.log(e)
@@ -267,7 +259,7 @@ export default {
 
         app.config.globalProperties.$xapp = {
             ott: ott,
-            accessToken,
+            accessToken: state.jwt,
             theme: theme,
             themeStyles: themeStyles,
             endpoint: api,
