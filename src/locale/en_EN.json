@@ -18,12 +18,12 @@
     },
     "xapp": {
         "headers": {
-            "select_destination": "Select Destination:",
+            "select_destination": "Destination:",
             "unactivated_account": "Account is not active",
             "receive": "Recipient will receive:",
             "offers": "Offers:",
-            "select_currency": "Select Currency",
-            "select_issuer": "Select Issuer",
+            "select_currency": "Select currency",
+            "select_issuer": "Please select an issuer",
             "no_offers": "No Available Offers, reduce quantity or change currency",
             "no_input": "Set a value and currency above"
         },
@@ -35,8 +35,8 @@
             "account_not_found_login_button": "Login (actNotFound)",
             "close": "Close",
             "select_destination": "Select destination",
-            "select_currency": "Select Currency",
-            "pay_now": "Pay Now!"
+            "select_currency": "Select currency",
+            "pay_now": "Pay now!"
         },
         "error": {
             "modal_title": "Oops",
