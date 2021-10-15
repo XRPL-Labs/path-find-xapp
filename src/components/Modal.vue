@@ -52,7 +52,8 @@ export default {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color: var(--var-bg-color);
+  /* background-color: var(--var-bg-color); */
+  background-color: var(--var-tint);
   /* width: 160px; */
   /* height: 160px; */
   width: calc(100% - 5rem);

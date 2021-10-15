@@ -177,7 +177,8 @@ export default {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color: var(--var-bg-color);
+  /* background-color: var(--var-bg-color); */
+  background-color: var(--var-tint);
   width: calc(100% - 5rem);
   height: auto;
   max-height: calc(100vh - 5rem);
@@ -236,7 +237,7 @@ li {
   padding: 0.75rem;
   margin: 0.4rem 0;
   text-align: center;
-  background: var(--var-lightgrey);
+  background: var(--var-bg-color);
   border-radius: 0.5rem;
 }
 </style>

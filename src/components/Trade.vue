@@ -51,7 +51,9 @@
         <span>{{ $t('xapp.headers.no_input') }}</span>
       </div>
     </div>
+
     <Spinner v-else-if="fetching" />
+
     <div class="row offer-list" v-else-if="Object.keys(offers).length > 0">
       <h3>{{ $t('xapp.headers.offers') }}</h3>
       <div class="payment-card" v-for="(items, currency) in offers" :key="currency">
@@ -72,7 +74,12 @@
         </div>
       </div>
     </div>
-    <h3 v-else-if="destination">{{ $t('xapp.headers.no_offers') }}</h3>
+
+    <div v-else-if="destination" class="row selectvalue">
+      <div class="alert alert-primary">
+        <span>{{ $t('xapp.headers.no_offers') }}</span>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -466,7 +473,7 @@ div.account .btn.switch {
 .offer-list .payment-card {
   background: var(--var-lightgrey);
   /* background: rgb(241,241,241); */
-  background: linear-gradient(90deg, var(--var-lightgrey) 0%, rgba(255, 255, 255, 1) 100%);
+  background: linear-gradient(90deg, var(--var-tint) 0%, var(--var-bg-color) 100%);
   margin-bottom: 0.3rem;
   padding: 0.5rem;
   border-radius: 0.5rem;

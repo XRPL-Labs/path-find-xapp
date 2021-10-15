@@ -35,13 +35,20 @@ export default {
 
             '--var-LIGHT': '#FFFFFF',
             '--var-DARK': '#000000',
+            '--var-DARK-TINT': '#181A21',
             '--var-MOONLIGHT': '#181A21',
+            '--var-MOONLIGHT-TINT': '#262934',
             '--var-ROYAL': '#030B36',
+            '--var-ROYAL-TINT': '#1A2148',
 
             '--var-bg-color': `var(--var-${theme})`,
+
+            '--var-tint':  theme === 'LIGHT' ? 'var(--var-lightgrey)' :
+                           theme === 'DARK' ? 'var(--var-DARK-TINT)' :
+                           theme === 'MOONLIGHT' ? 'var(--var-MOONLIGHT-TINT)' : 'var(--var-ROYAL-TINT)',
             '--var-txt-color': theme === 'LIGHT' ? 'var(--var-txt-dark)' : 'var(--var-txt-light)',
-            '--var-primary': theme === 'LIGHT' ? 'var(--var-blue)' : 'var(--var-orange)',
-            '--var-secondary': theme === 'LIGHT' ? 'var(--var-silver)' : 'var(--var-black)',
+            '--var-primary': theme === 'LIGHT' ? 'var(--var-blue)' : 'var(--var-blue)',
+            '--var-secondary': theme === 'LIGHT' ? 'var(--var-silver)' : 'var(--var-tint)',
 
             '--var-border': theme === 'LIGHT' ? 'var(--var-silver)' : 'rgba(255, 255, 255, 0.26)',
 
@@ -69,7 +76,7 @@ export default {
                 }
             } else {
                 return state.tokenData
-            }    
+            }
         }
 
         const sendCommandtoXumm = (command) => {
@@ -96,7 +103,7 @@ export default {
                 })
             } catch(e) {
                 throw e
-            }            
+            }
         }
 
         const getCuratedAssets = async () => {
@@ -209,7 +216,7 @@ export default {
 
             var integer = Math.trunc(amount)
             var decimal = amount % 1
-            
+
             switch(currency) {
                 case 'XRP':
                     return amount = Number(amount / 1_000_000).toFixed(6)
