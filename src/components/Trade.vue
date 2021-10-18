@@ -306,7 +306,7 @@ export default {
             TransactionType: 'SignIn'
           }
         })
-        const account = result.data.response.account
+        const account = result.response.account
         if (this.$xapp.getAccount() === account) throw {msg: 'Same account', error: false}
 
         this.closePathFind()
