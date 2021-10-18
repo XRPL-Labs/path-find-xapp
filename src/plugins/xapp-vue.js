@@ -243,9 +243,23 @@ export default {
 
             var hex = string.toString()
             var str = ''
-            for (var n = 0; n < hex.length; n += 2) {
-                str += String.fromCharCode(parseInt(hex.substr(n, 2), 16))
+
+            // check for XLS15d
+            if (hex.startsWith('02')) {
+                try {
+                    const binary = Buffer.from(hex, 'hex')
+                    str = binary.slice(8).toString('utf-8');
+                } catch {
+                    for (var n = 0; n < hex.length; n += 2) {
+                        str += String.fromCharCode(parseInt(hex.substr(n, 2), 16))
+                    }
+                }
+            } else {
+                for (var n = 0; n < hex.length; n += 2) {
+                    str += String.fromCharCode(parseInt(hex.substr(n, 2), 16))
+                }
             }
+
             var trimmed = str.trim()
             if(trimmed.length > maxLength) {
                 return trimmed.slice(0, maxLength)
