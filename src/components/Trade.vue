@@ -54,24 +54,27 @@
 
     <Spinner v-else-if="fetching" />
 
-    <div class="row offer-list" v-else-if="Object.keys(offers).length > 0">
-      <h3>{{ $t('xapp.headers.offers') }}</h3>
-      <div class="payment-card" v-for="(items, currency) in offers" :key="currency">
-        <div class="listitem" v-if="currency === 'XRP'">
-          <div class="labelvalue">
-            <label>XRP:</label>
-            {{ $xapp.currencyFormat(items.source_amount, 'XRP') }}
-          </div>
-          <a class="btn btn-success btn-sm" @click="pay(items)">{{ $t('xapp.button.pay_now') }}</a>
-        </div>
+    <div class="offer-list" v-else-if="Object.keys(offers).length > 0">
 
-        <div class="listitem" v-else v-for="(item, issuer) in items" :key="issuer">
-          <div class="labelvalue">
-            <label>{{ $xapp.currencyCodeFormat(item.source_amount.currency, 4) }}:</label>
-            {{ $xapp.currencyFormat(item.source_amount.value, item.source_amount.currency) }}
+        <h3>{{ $t('xapp.headers.offers') }}</h3>
+        <div class="payment-card" v-for="(items, currency) in offers" :key="currency">
+
+          <div class="listitem" v-if="currency === 'XRP'">
+            <div class="labelvalue number">
+              <label>XRP:</label>
+              {{ $xapp.currencyFormat(items.source_amount, 'XRP') }}
+            </div>
+            <a class="btn btn-success btn-sm" @click="pay(items)">{{ $t('xapp.button.pay_now') }}</a>
           </div>
-          <a class="btn btn-success btn-sm" @click="pay(item)">{{ $t('xapp.button.pay_now') }}</a>
-        </div>
+
+          <div class="listitem" v-else v-for="(item, issuer) in items" :key="issuer">
+            <div class="labelvalue number">
+              <label>{{ $xapp.currencyCodeFormat(item.source_amount.currency, 4) }}:</label>
+              {{ $xapp.currencyFormat(item.source_amount.value, item.source_amount.currency) }}
+            </div>
+            <a class="btn btn-success btn-sm" @click="pay(item)">{{ $t('xapp.button.pay_now') }}</a>
+          </div>
+
       </div>
     </div>
 
@@ -425,6 +428,13 @@ export default {
 </script>
 
 <style>
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+}
 div.account {
   display: grid;
   grid-template-columns: auto auto;
@@ -463,9 +473,13 @@ h3 {
 div.account .btn.switch {
   justify-self: end;
 }
-
 .offer-list {
-  padding: 0.75rem 1rem 0.75rem 1rem !important;
+  /* padding: 0.75rem 1rem 0.75rem 1rem !important; */
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  width: calc(100% - 2rem);
+  overflow-y: auto;
 }
 .offer-list h3 {
   margin-bottom: 1rem;

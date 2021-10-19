@@ -297,12 +297,12 @@ body {
 } */
 
 .row {
-  padding: 0 1rem;
+  /* padding: 0 1rem; */
   /* display: flex; */
   /* flex-direction: row; */
-  /* width: 100%; */
-  /* margin: 5px 0; */
-  /* align-items: center; */
+  width: 95%;
+  margin: 0 10rem;
+  align-items: center;
 }
 .column {
   display: flex;
