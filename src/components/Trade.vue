@@ -52,7 +52,9 @@
       </div>
     </div>
 
-    <Spinner v-else-if="fetching" />
+    <div v-else-if="fetching" style="transform: translateX(50%)">
+      <Spinner />
+    </div>
 
     <div class="offer-list" v-else-if="Object.keys(offers).length > 0">
 
