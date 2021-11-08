@@ -401,9 +401,18 @@ export default {
 
       try {
         const res = await this.$rippled.send(command)
+        if(res.hasOwnProperty('error') || !res.hasOwnProperty('result')) throw res
         this.parsePathFindData(res.result)
       } catch (e) {
         console.log(e)
+        if(e.hasOwnProperty('error_code') && e.hasOwnProperty('error_message')) {
+          return this.$emitter.emit('modal', {
+            type: 'error',
+            title: this.$t('xapp.error.modal_title'),
+            text: `${this.$t('xapp.error.path_find')} (${e.error_message} ${e.error_code})`,
+            buttonText: this.$t('xapp.button.close')
+          })
+        }
         this.$emitter.emit('modal', {
           type: 'error',
           title: this.$t('xapp.error.modal_title'),
