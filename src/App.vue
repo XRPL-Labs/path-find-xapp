@@ -131,7 +131,7 @@ export default {
               console.log(e)
               throw this.$t('xapp.error.get_ott_data')
           }
-          if (this.versionCheck(this.data.version, '2.1.0') < 0) {
+          if (this.versionCheck(this.data.version, '2.2.3') < 0) {
               throw this.$t('xapp.error.version')
           }
       }
