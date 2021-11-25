@@ -18,6 +18,14 @@
       </a>
     </div>
 
+    <div v-else-if="error === $t('xapp.error.max_trustlines')" class="row signin">
+      <h3>{{ $t('xapp.headers.max_trustlines') }}</h3>
+      <p>{{ error }}</p>
+      <a @click="signin()" class="btn btn-block btn-primary">
+        {{ $t('xapp.button.max_trustlines') }}
+      </a>
+    </div>
+
     <div v-else-if="!destination" class="row destination">
       <h3>{{ $t('xapp.headers.select_destination') }}</h3>
       <a @click="selectDestination()" class="btn btn-block btn-primary">
@@ -110,7 +118,8 @@ export default {
       destinationtrustlines: [],
       fetching: false,
       offers: {},
-      index: 0
+      index: 0,
+      error: null
     }
   },
   computed: {
@@ -152,6 +161,15 @@ export default {
     }
   },
   methods: {
+    async checkTrustlines(account) {
+      const account_lines = await this.$rippled.send({
+        command: 'account_lines',
+        account: account
+      })
+      if(account_lines?.lines?.length >= 88 && account_lines?.lines?.length) {
+        this.error = this.$t('xapp.error.max_trustlines')
+      }
+    },
     async onQuantityChange() {
       if (this.quantity <= 0) return
       this.fetching = true
@@ -427,6 +445,7 @@ export default {
     }
   },
   async mounted() {
+    this.checkTrustlines(this.$xapp.getAccount())
     setInterval(() => {
       this.online = this.$rippled.getState().online
     }, 1000)

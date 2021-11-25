@@ -25,7 +25,8 @@
             "select_currency": "Select currency",
             "select_issuer": "Please select an issuer",
             "no_offers": "No Available Offers, reduce quantity or change currency",
-            "no_input": "Set a value and currency above"
+            "no_input": "Set a value and currency above",
+            "max_trustlines": "Exceeded max of 88 trustlines or more"
         },
         "input": {
             "quantity": "Quantity"
@@ -36,7 +37,8 @@
             "close": "Close",
             "select_destination": "Select destination",
             "select_currency": "Select currency",
-            "pay_now": "Pay now!"
+            "pay_now": "Pay now!",
+            "max_trustlines": "Change Account"
         },
         "error": {
             "modal_title": "Oops",
@@ -50,7 +52,8 @@
             "get_curated_assets": "Currency list is not available from the API",
             "react_native_webview": "There is an error with the webview",
             "path_find": "An error occured finding a path",
-            "account_lines": "Error getting destination account lines"
+            "account_lines": "Error getting destination account lines",
+            "max_trustlines": "This account has 88 or more trustlines, please use a different account to use Path Finding."
         },
         "info": {
             "no_funds": "You do not have funds for this currency"
