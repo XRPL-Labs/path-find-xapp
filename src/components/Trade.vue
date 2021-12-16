@@ -119,7 +119,8 @@ export default {
       fetching: false,
       offers: {},
       index: 0,
-      error: null
+      error: null,
+      searchTimeout: null
     }
   },
   computed: {
@@ -155,7 +156,11 @@ export default {
         }
         if (this.quantity !== value) {
           this.quantity = value
-          this.onQuantityChange()
+          if (this.quantity <= 0 || isNaN(this.quantity)) return
+          this.fetching = true
+          clearTimeout(this.searchTimeout)
+          const self = this
+          this.searchTimeout = setTimeout(() => self.onQuantityChange(), 250)
         }
       }
     }
@@ -171,11 +176,12 @@ export default {
       }
     },
     async onQuantityChange() {
-      if (this.quantity <= 0) return
-      this.fetching = true
+      // if (this.quantity <= 0) return
+      // this.fetching = true
       await this.closePathFind()
       if (typeof this.quantity === 'number') {
         await this.createPathFind()
+        console.log('result...')
       }
       this.fetching = false
     },
