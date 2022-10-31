@@ -342,12 +342,14 @@ export default {
         this.offers = {}
         this.InputQuantity = null
         this.quantity = null
+        this.error = null
 
         await this.$rippled.send({
           command: 'unsubscribe',
           accounts: [this.$xapp.getAccount()]
         })
         await this.setAccountData(account)
+        await this.checkTrustlines(account)
         await this.$rippled.send({
           command: 'subscribe',
           accounts: [account]

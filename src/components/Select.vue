@@ -147,15 +147,6 @@ export default {
         buttonText: this.$t('xapp.button.close')
       })
     }
-
-    // try {
-    //     const res = await fetch('https://tokens.xumm.community/api/v1/tokens')
-    //     // const res = await axios.get('https://tokens.xumm.community/api/v1/tokens')
-    //     this.tokens = res.tokens
-    // } catch(e) {
-    //     // alert('error with nixer API')
-    //     // alert(e)
-    // }
   }
 }
 </script>
