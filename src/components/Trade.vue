@@ -110,7 +110,7 @@ export default {
       online: false,
       InputQuantity: null,
       quantityInputError: false,
-      destination: account,
+      destination: null,
       destinationError: false,
       destinationName: 'Me',
       issuer: null,
@@ -454,6 +454,7 @@ export default {
   },
   async mounted() {
     this.checkTrustlines(this.$xapp.getAccount())
+    this.destination = this.account
     setInterval(() => {
       this.online = this.$rippled.getState().online
     }, 1000)
