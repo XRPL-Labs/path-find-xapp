@@ -35,7 +35,9 @@ import rippled from './plugins/rippled-vue'
 import xapp from './plugins/xapp-vue'
 app.use(rippled)
 app.use(xapp, {
-    api: 'https://xaman.app/api/v1/xapp-jwt', key: process.env.VUE_APP_XAPP_KEY,
+    api: 'https://xaman.app/api/v1/xapp-jwt',
+    key: process.env.VUE_APP_XAPP_KEY,
+    // key: 'c2c6699a-0ddf-4a01-b641-5cb48297b24f',
     // api: 'http://localhost:3001/api/v1/xapp-jwt', key: process.env.VUE_APP_XAPP_KEY,
 })
 
