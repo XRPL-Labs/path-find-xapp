@@ -118,7 +118,8 @@ export default {
       if (typeof window.ReactNativeWebView === 'undefined') {
           this.data = {
               account: 'rJR4MQt2egH9AmibZ8Hu5yTKVuLPv1xumm',
-              nodetype: 'MAINNET',
+              // nodetype: 'MAINNET',
+              nodetype: 'XAHAU',
               // account: 'rMtfWxk9ZLr5mHrRzJMnaE5x1fqN3oPdJ7',
               // nodetype: 'TESTNET'
           }
@@ -139,6 +140,7 @@ export default {
     async subscribe() {
       this.busy = true
       try {
+        this.$xapp.setCurrency((this?.data?.nodetype || '').match(/xahau/i) ? 'XAH' : 'XRP')
         const url = this.data.nodewss
         await this.$rippled.connect(url, {NoUserAgent: true, MaxConnectTryCount: 5})
         this.setAccountData()

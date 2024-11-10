@@ -43,7 +43,7 @@
         "error": {
             "modal_title": "Oops",
             "get_ott_data": "Failed to fetch your Xaman data",
-            "subscribe_to_account": "Failed to subscribe to the XRP Ledger",
+            "subscribe_to_account": "Failed to subscribe to the ledger (network connection error)",
             "version": "Please update Xaman to at least version 2.2.5 to use this xApp",
             "sign_offer_create": "A wild error occured creating an Offer",
             "signin": "A wild error occured trying to login",

@@ -3,7 +3,7 @@
     <div v-if="!issuerSelect" id="select-element">
       <h3>{{ $t('xapp.headers.select_currency') }}</h3>
       <ul>
-        <li @click="setCurrency('XRP')">XRP</li>
+        <li @click="setCurrency('XRP')">{{ $xapp.getCurrency() }}</li>
         <li @click="setCurrency(currency)" v-for="(item, currency, index) in currencyList" :key="index">{{ $xapp.currencyCodeFormat(currency, 16) }}</li>
       </ul>
     </div>

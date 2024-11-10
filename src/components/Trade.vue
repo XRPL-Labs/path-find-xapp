@@ -71,7 +71,7 @@
 
           <div class="listitem" v-if="currency === 'XRP'">
             <div class="labelvalue number">
-              <label>XRP:</label>
+              <label>{{ $xapp.getCurrency() }}:</label>
               {{ $xapp.currencyFormat(items.source_amount, 'XRP') }}
             </div>
             <a class="btn btn-success btn-sm" @click="pay(items)">{{ $t('xapp.button.pay_now') }}</a>

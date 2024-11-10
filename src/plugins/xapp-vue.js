@@ -6,6 +6,7 @@ const state = reactive({
     jwt: null,
     account_obj: {},
     account: null,
+    currency: 'XRP',
     curatedAssets: {}
 })
 
@@ -174,12 +175,20 @@ export default {
             return state.account
         }
 
+        const getCurrency = () => {
+            return state.currency
+        }
+
         const getAccountData = () => {
             return state.account_obj
         }
 
         const setAccount = (account) => {
             state.account = account
+        }
+
+        const setCurrency = (currency) => {
+            state.currency = currency
         }
 
         const setAccountData = (data) => {
@@ -238,7 +247,10 @@ export default {
             if(!isHex(string)) {
                 if(string.length > maxLength) {
                     return string.slice(0, maxLength)
-                } else return string
+                } else {
+                    if (getCurrency() === 'XAH' && string === 'XRP') return 'XAH'
+                    return string
+                }
             }
 
             var hex = string.toString()
@@ -290,6 +302,8 @@ export default {
             openSignRequest,
             destinationSelect,
             closeXapp,
+            setCurrency,
+            getCurrency,
             status,
             setAccountData,
             setAccount,
