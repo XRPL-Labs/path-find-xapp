@@ -453,8 +453,9 @@ export default {
     }
   },
   async mounted() {
-    this.checkTrustlines(this.$xapp.getAccount())
+    this.$xapp.setAccount(this.account)
     this.destination = this.account
+    this.checkTrustlines(this.destination)
     setInterval(() => {
       this.online = this.$rippled.getState().online
     }, 1000)
