@@ -67,17 +67,18 @@
     <div class="offer-list" v-else-if="Object.keys(offers).length > 0">
 
         <h3>{{ $t('xapp.headers.offers') }}</h3>
+        <!-- <pre>{{ JSON.stringify(offers, null, 2) }}</pre> -->
         <div class="payment-card" v-for="(items, currency) in offers" :key="currency">
 
-          <div class="listitem" v-if="currency === 'XRP'">
+          <div class="listitem" v-if="($xapp.getNetwork() === 'XRPL' && currency === 'XRP') || ($xapp.getNetwork() === 'XAHAU' && currency === 'XAH')">
             <div class="labelvalue number">
               <label>{{ $xapp.getCurrency() }}:</label>
-              {{ $xapp.currencyFormat(items.source_amount, 'XRP') }}
+              {{ $xapp.currencyFormat(items.source_amount, currency) }}
             </div>
             <a class="btn btn-success btn-sm" @click="pay(items)">{{ $t('xapp.button.pay_now') }}</a>
           </div>
 
-          <div class="listitem" v-else v-for="(item, issuer) in items" :key="issuer">
+          <div class="listitem" v-else v-for="(item, issuer) in items" :key="index">
             <div class="labelvalue number">
               <label>{{ $xapp.currencyCodeFormat(item.source_amount.currency, 4) }}:</label>
               {{ $xapp.currencyFormat(item.source_amount.value, item.source_amount.currency) }}
@@ -114,7 +115,7 @@ export default {
       destinationError: false,
       destinationName: 'Me',
       issuer: null,
-      currency: 'XRP',
+      currency: this.$xapp.getNetwork() === 'XAHAU' ? 'XAH' : 'XRP',
       destinationtrustlines: [],
       fetching: false,
       offers: {},
@@ -151,7 +152,7 @@ export default {
         this.InputQuantity = value.toString()
         value = parseFloat(value)
 
-        if (this.currency === 'XRP') {
+        if ((this.currency === 'XRP' && this.$xapp.getNetwork() === 'XRPL') || (this.currency === 'XAH' && this.$xapp.getNetwork() === 'XAHAU')) {
           value = Math.trunc(value * 1_000_000)
         }
         if (this.quantity !== value) {
@@ -238,7 +239,7 @@ export default {
         Account: this.account,
         Destination: this.destination,
         SendMax: path.source_amount,
-        Amount: this.currency === 'XRP' ? this.quantity.toString() : {currency: this.currency, value: this.quantity, issuer: this.issuer},
+        Amount: ((this.currency === 'XRP' && this.$xapp.getNetwork() === 'XRPL') || (this.currency === 'XAH' && this.$xapp.getNetwork() === 'XAHAU')) ? this.quantity.toString() : {currency: this.currency, value: this.quantity, issuer: this.issuer},
         Paths: path.paths_computed,
         Flags: 131072
       }
@@ -251,6 +252,7 @@ export default {
         this.$xapp.openTxViewer(txid, this.account)
         this.quantityInput = null
       } catch (e) {
+        console.log(e.message)
         if (e.error !== false) {
           this.$emitter.emit('modal', {
             type: 'error',
@@ -321,8 +323,10 @@ export default {
       this.offers = {}
       this.InputQuantity = null
       this.quantity = null
-      if (this.currency === 'XRP' && obj.currency !== 'XRP') this.quantity = this.quantity / 1_000_000
-      if (this.currency !== 'XRP' && obj.currency === 'XRP') this.quantity = this.quantity * 1_000_000
+      if (this.currency === 'XRP' && obj.currency !== 'XRP' && this.$xapp.getNetwork() === 'XRPL') this.quantity = this.quantity / 1_000_000
+      if (this.currency !== 'XRP' && obj.currency === 'XRP' && this.$xapp.getNetwork() === 'XRPL') this.quantity = this.quantity * 1_000_000
+      if (this.currency === 'XAH' && obj.currency !== 'XAH' && this.$xapp.getNetwork() === 'XAHAU') this.quantity = this.quantity / 1_000_000
+      if (this.currency !== 'XAH' && obj.currency === 'XAH' && this.$xapp.getNetwork() === 'XAHAU') this.quantity = this.quantity * 1_000_000
       this.currency = obj.currency
       this.issuer = obj.issuer
     },
@@ -386,13 +390,15 @@ export default {
     parsePathFindData(path) {
       path.alternatives.forEach((element) => {
         if (typeof element.source_amount === 'string' || typeof element.source_amount === 'number') {
-          this.offers['XRP'] = element
+          this.offers[this.$xapp.getNetwork() === 'XAHAU' ? 'XAH' : 'XRP'] = element
         } else {
           this.offers[element.source_amount.currency] = {
             [element.source_amount.issuer]: element
           }
         }
       })
+
+      console.log(JSON.stringify(this.offers, null, 2))
     },
     onPathFindUpdate(path) {
       if (path.id === this.index) this.parsePathFindData(path)
@@ -401,7 +407,7 @@ export default {
       this.offers = {}
       const amount = this.quantity.toString()
       let command = {}
-      if (this.currency === 'XRP') {
+      if ((this.currency === 'XRP' && this.$xapp.getNetwork() === 'XRPL') || (this.currency === 'XAH' && this.$xapp.getNetwork() === 'XAHAU')) {
         command = {
           id: this.index,
           command: 'path_find',
@@ -430,7 +436,7 @@ export default {
         if(res.hasOwnProperty('error') || !res.hasOwnProperty('result')) throw res
         this.parsePathFindData(res.result)
       } catch (e) {
-        console.log(e)
+        console.log(e.message, JSON.stringify(command, null, 2), this.currency, this.$xapp.getNetwork())
         if(e.hasOwnProperty('error_code') && e.hasOwnProperty('error_message')) {
           return this.$emitter.emit('modal', {
             type: 'error',

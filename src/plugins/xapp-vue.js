@@ -205,7 +205,7 @@ export default {
         }
         const getAccountFunds = (currency, issuer) => {
             if(state.account_obj === null || typeof state.account_obj === undefined) return null
-            if(currency === 'XRP' || currency === 'XAH') {
+            if((currency === 'XRP' && state.network === 'XRPL') || (currency === 'XAH' && state.network === 'XAHAU')) {
                 if(state.account_obj.objects === null || typeof state.account_obj.objects === undefined) return null
                 if(typeof state.account_obj.account_data === undefined || typeof state.account_obj.account_data.Balance === undefined) return null
                 const accountReserve = 20000000
@@ -235,8 +235,10 @@ export default {
             var integer = Math.trunc(amount)
             var decimal = amount % 1
 
+            const native_asset = state.network === 'XAHAU' ? 'XAH' : 'XRP'
+
             switch(currency) {
-                case 'XRP':
+                case native_asset:
                     return amount = Number(amount / 1_000_000).toFixed(6)
                 default:
                     decimal = decimal.toFixed(8)
@@ -257,7 +259,6 @@ export default {
                 if(string.length > maxLength) {
                     return string.slice(0, maxLength)
                 } else {
-                    if (getCurrency() === 'XAH' && string === 'XRP') return 'XAH'
                     return string
                 }
             }

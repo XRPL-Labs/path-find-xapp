@@ -3,7 +3,7 @@
     <div v-if="!issuerSelect" id="select-element">
       <h3>{{ $t('xapp.headers.select_currency') }}</h3>
       <ul>
-        <li @click="setCurrency('XRP')">{{ $xapp.getCurrency() }}</li>
+        <li @click="setCurrency($xapp.getNetwork() === 'XAHAU' ? 'XAH' : 'XRP')">{{ $xapp.getCurrency() }}</li>
         <li @click="setCurrency(currency)" v-for="(item, currency, index) in currencyList" :key="index">{{ $xapp.currencyCodeFormat(currency, 16) }}</li>
       </ul>
     </div>
@@ -123,7 +123,7 @@ export default {
       this.$emit('currencyChange', object)
     },
     setCurrency(currency) {
-      if (currency === 'XRP') {
+      if ((currency === 'XRP' && this.$xapp.getNetwork() === 'XRPL') || (currency === 'XAH' && this.$xapp.getNetwork() === 'XAHAU')) {
         this.active = false
         return this.$emit('currencyChange', {currency, issuer: null})
       } else if (Object.keys(this.accountTrustlines[currency]).length <= 1) {
