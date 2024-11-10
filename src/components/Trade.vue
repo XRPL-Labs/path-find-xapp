@@ -455,7 +455,10 @@ export default {
   async mounted() {
     this.$xapp.setAccount(this.account)
     this.destination = this.account
-    await this.selectDestination()
+    try {
+      const account_lines = await this.$rippled.send({ command: 'account_lines', account: this.destination })
+      this.destinationtrustlines = account_lines.lines
+    } catch (e) {}
     await this.checkTrustlines(this.destination)
     setInterval(() => {
       this.online = this.$rippled.getState().online
