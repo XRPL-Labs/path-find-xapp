@@ -286,9 +286,9 @@ export default {
         }
       }
 
-      if (typeof window.ReactNativeWebView === 'undefined') {
-        this.destination = 'rJR4MQt2egH9AmibZ8Hu5yTKVuLPv1xumm'
-      }
+      // if (typeof window.ReactNativeWebView === 'undefined') {
+      //   this.destination = 'rJR4MQt2egH9AmibZ8Hu5yTKVuLPv1xumm'
+      // }
       try {
         const account_lines = await this.$rippled.send({
           command: 'account_lines',
@@ -455,7 +455,8 @@ export default {
   async mounted() {
     this.$xapp.setAccount(this.account)
     this.destination = this.account
-    this.checkTrustlines(this.destination)
+    await this.selectDestination()
+    await this.checkTrustlines(this.destination)
     setInterval(() => {
       this.online = this.$rippled.getState().online
     }, 1000)
