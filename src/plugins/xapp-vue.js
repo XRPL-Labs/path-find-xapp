@@ -7,6 +7,7 @@ const state = reactive({
     account_obj: {},
     account: null,
     currency: 'XRP',
+    network: 'XRPL',
     curatedAssets: {}
 })
 
@@ -179,6 +180,10 @@ export default {
             return state.currency
         }
 
+        const getNetwork = () => {
+            return state.network
+        }
+
         const getAccountData = () => {
             return state.account_obj
         }
@@ -189,6 +194,10 @@ export default {
 
         const setCurrency = (currency) => {
             state.currency = currency
+        }
+
+        const setNetwork = (network) => {
+            state.network = network
         }
 
         const setAccountData = (data) => {
@@ -304,6 +313,8 @@ export default {
             closeXapp,
             setCurrency,
             getCurrency,
+            setNetwork,
+            getNetwork,
             status,
             setAccountData,
             setAccount,

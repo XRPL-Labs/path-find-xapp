@@ -141,6 +141,7 @@ export default {
       this.busy = true
       try {
         this.$xapp.setCurrency((this?.data?.nodetype || '').match(/xahau/i) ? 'XAH' : 'XRP')
+        this.$xapp.setNetwork((this?.data?.nodetype || '').match(/xahau/i) ? 'XAHAU' : 'XRPL')
         const url = this.data.nodewss
         await this.$rippled.connect(url, {NoUserAgent: true, MaxConnectTryCount: 5})
         this.setAccountData()
