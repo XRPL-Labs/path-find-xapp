@@ -115,27 +115,27 @@ export default {
     async getTokenData() {
       this.busy = true
       // todo DELETE MEEE ASAP ONLY FOR TESTING ON LOCALHOST
-      if (typeof window.ReactNativeWebView === 'undefined') {
-          this.data = {
-              account: 'rJR4MQt2egH9AmibZ8Hu5yTKVuLPv1xumm',
-              // nodetype: 'MAINNET',
-              nodetype: 'XAHAU',
-              // account: 'rMtfWxk9ZLr5mHrRzJMnaE5x1fqN3oPdJ7',
-              // nodetype: 'TESTNET'
-          }
+      // if (typeof window.ReactNativeWebView === 'undefined') {
+      //     this.data = {
+      //         account: 'rJR4MQt2egH9AmibZ8Hu5yTKVuLPv1xumm',
+      //         // nodetype: 'MAINNET',
+      //         nodetype: 'XAHAU',
+      //         // account: 'rMtfWxk9ZLr5mHrRzJMnaE5x1fqN3oPdJ7',
+      //         // nodetype: 'TESTNET'
+      //     }
+      //     this.$xapp.setAccount(this.data.account)
+      // } else {
+      try {
+          this.data = await this.$xapp.getTokenData()
           this.$xapp.setAccount(this.data.account)
-      } else {
-          try {
-              this.data = await this.$xapp.getTokenData()
-              this.$xapp.setAccount(this.data.account)
-          } catch(e) {
-              console.log(e)
-              throw this.$t('xapp.error.get_ott_data')
-          }
-          if (this.versionCheck(this.data.version, '2.2.5') < 0) {
-              throw this.$t('xapp.error.version')
-          }
+      } catch(e) {
+          console.log(e)
+          throw this.$t('xapp.error.get_ott_data')
       }
+      if (this.versionCheck(this.data.version, '2.2.5') < 0) {
+          throw this.$t('xapp.error.version')
+      }
+      // }
     },
     async subscribe() {
       this.busy = true

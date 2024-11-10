@@ -110,7 +110,7 @@ export default {
         const getCuratedAssets = async () => {
             if(state.curatedAssets && Object.keys(state.curatedAssets).length > 0 && state.curatedAssets.constructor === Object) return state.curatedAssets
             try {
-                const res = await axios.get(`${api}/curated-assets`, headers())
+                const res = await axios.get(`https://xaman.app/api/v1/platform/curated-assets`, headers())
                 state.curatedAssets = res.data
                 return state.curatedAssets
             } catch(e) {

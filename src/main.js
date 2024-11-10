@@ -34,6 +34,9 @@ app.component('fa', FontAwesomeIcon)
 import rippled from './plugins/rippled-vue'
 import xapp from './plugins/xapp-vue'
 app.use(rippled)
-app.use(xapp, { api: 'https://xumm.app/api/v1/xapp-jwt', key: process.env.VUE_APP_XAPP_KEY })
+app.use(xapp, {
+    api: 'https://xaman.app/api/v1/xapp-jwt', key: process.env.VUE_APP_XAPP_KEY,
+    // api: 'http://localhost:3001/api/v1/xapp-jwt', key: process.env.VUE_APP_XAPP_KEY,
+})
 
 app.mount('#app')
