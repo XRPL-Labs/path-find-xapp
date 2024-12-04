@@ -388,7 +388,10 @@ export default {
       this.$xapp.setAccountData(account_data)
     },
     parsePathFindData(path) {
-      path.alternatives.forEach((element) => {
+      path.alternatives.filter(r => {
+        // Strip empty arrays
+        return Array.isArray(r?.paths_computed) && r.paths_computed.length > 0
+      }).forEach((element) => {
         if (typeof element.source_amount === 'string' || typeof element.source_amount === 'number') {
           this.offers[this.$xapp.getNetwork() === 'XAHAU' ? 'XAH' : 'XRP'] = element
         } else {
